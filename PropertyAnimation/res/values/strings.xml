@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+   <string name="app_name">PropertyAnimations</string>
+    <string name="title_activity_property_animations">PropertyAnimations</string>
+    <string name="use_animation_resources">Use Animation Resources</string>
+    <string name="alpha">Alpha</string>
+    <string name="translate">Translate</string>
+    <string name="rotate">Rotate</string>
+    <string name="scale">Scale</string>
+    <string name="set">Set</string>
+
+</resources>

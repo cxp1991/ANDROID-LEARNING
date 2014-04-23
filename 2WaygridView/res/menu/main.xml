@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Favorite -->
+    <item android:id="@+id/action_favourite"
+          android:icon="@drawable/ic_action_star"
+          android:title="@string/action_action_favourite"
+          android:showAsAction="ifRoom"/>
+    
+    <!-- Share -->
+    <item android:id="@+id/action_share"
+          android:icon="@drawable/ic_action_share"
+          android:title="@string/action_action_share"
+          android:showAsAction="ifRoom" />
+    
+    <!-- Refresh -->
+    <item android:id="@+id/action_refresh"
+          android:icon="@drawable/ic_action_refresh"
+          android:title="@string/action_action_refresh" 
+          android:showAsAction="ifRoom" />
+
+</menu>
