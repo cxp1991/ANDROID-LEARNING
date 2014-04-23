@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 public class MainActivity extends Activity {
 
@@ -91,9 +90,7 @@ public class MainActivity extends Activity {
 		
 	    /* User's songs */
 		userSong_hrscrollView = (HorizontalScrollView) findViewById(R.id.horizontalscrollview);
-		LinearLayout lin = (LinearLayout) findViewById( R.id.ln_main);
-		int width = lin.getWidth();
-		userSong_hrscrollView.scrollTo( width / 2, 0 );
+		
 		
 		// Get the image view
 	    imageView_01 = (ImageView)findViewById(R.id.image_01);
@@ -175,7 +172,9 @@ public class MainActivity extends Activity {
 		
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
-			
+			//int [] location = new int [2];
+			//userSong_hrscrollView.getChildAt(3).getLocationOnScreen(location);
+			//Log.i("TAG",location[0] + " " + location[1]);
 			switch (event.getAction()) {
 	            
 				case MotionEvent.ACTION_DOWN: {  
