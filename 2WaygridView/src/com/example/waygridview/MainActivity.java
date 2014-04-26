@@ -55,14 +55,14 @@ public class MainActivity extends Activity {
 				}
 				
 				if(position == 0){
-					mPlayer = MediaPlayer.create(getBaseContext(), R.raw.naxd);
+					//mPlayer = MediaPlayer.create(getBaseContext(), R.raw.naxd);
 	                
 					MainActivity.mPlayer.start();
 					MainActivity.mPlayer.setLooping(true);
 				}
 				
 				if(position == 1){
-					mPlayer = MediaPlayer.create(getBaseContext(), R.raw.nhungayxuaemden);
+					//mPlayer = MediaPlayer.create(getBaseContext(), R.raw.nhungayxuaemden);
 	                
 					MainActivity.mPlayer.start();
 					MainActivity.mPlayer.setLooping(true);
