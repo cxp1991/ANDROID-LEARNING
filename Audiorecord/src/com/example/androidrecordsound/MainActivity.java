@@ -14,16 +14,14 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends Activity {
-
 	private static final int RECORDER_SAMPLERATE = 44100;
 	private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_STEREO;
 	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 	private AudioRecord recorder 	= null;
 	private Thread recordingThread 	= null;
 	private boolean isRecording 	= false;
-	//int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
-	//int BytesPerElement = 2; // 2 bytes in 16bit format
 	int bufferSize;
+	private native void native_save_sound(byte[] soundData, int size);
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -97,12 +95,15 @@ public class MainActivity extends Activity {
 			// gets the voice output from microphone to byte format
 			recorder.read(bData, 0, bData.length);
 			System.out.println("Short wirting to file" + bData.toString());
-			try {
+			
+			native_save_sound(bData, bufferSize);
+			
+			/*try {
 				// writes the data to file from buffer stores the voice buffer
 				os.write(bData, 0, bufferSize);
 			}catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 		
 		try {
@@ -148,4 +149,9 @@ public class MainActivity extends Activity {
 			}
 		}
 	};
+	
+	static
+    {
+        System.loadLibrary("sound");
+    }
 }

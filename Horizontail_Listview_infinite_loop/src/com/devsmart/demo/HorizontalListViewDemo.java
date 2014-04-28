@@ -48,7 +48,7 @@ public class HorizontalListViewDemo extends Activity
 		}
 
 		@Override
-		public View getView (int position, View convertView, ViewGroup parent) 
+		public View getView ( int position, View convertView, ViewGroup parent ) 
 		{
 			Log.i("TAG", "getView");
 			View retval = LayoutInflater.from (parent.getContext()).inflate(R.layout.viewitem, null);
