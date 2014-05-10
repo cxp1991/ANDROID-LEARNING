@@ -10,34 +10,61 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
-        android:background="@android:color/darker_gray"/>
+        android:background="#000000"/>
     
-    <HorizontalScrollView 
-        android:layout_width="wrap_content"
+    <FrameLayout 
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
-        android:background="@android:color/background_dark"
+        android:layout_weight="2">
+        
+        <RelativeLayout 
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView 
+                android:id="@+id/tmpImg"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:background="#88000000"
+                android:layout_centerHorizontal="true"
+                android:padding="4dp"/>
+        </RelativeLayout>
+        
+        <HorizontalScrollView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:scrollbars="none"
         android:id="@+id/horizontalscrollview">
-        
-        <LinearLayout
-            android:id="@+id/linear_layout" 
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="4dp">
+            
+            <LinearLayout 
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                
+           <!-- Head 01-->
+            <FrameLayout 
+                android:layout_width="100dp"
+                android:layout_height="match_parent">
+            </FrameLayout>
+            
+            <!-- Head 01-->
+            <FrameLayout 
+                android:layout_width="100dp"
+                android:layout_height="match_parent">
+            </FrameLayout>
             
             <!-- Image 01-->
             <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
+                
                 <ImageView
 	            android:id="@+id/image_01"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -55,7 +82,7 @@
             
                <!-- Image 02-->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -64,7 +91,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -82,7 +110,7 @@
             
              <!-- Image 03-->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -91,7 +119,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -109,7 +138,7 @@
             
              <!-- Image 04 -->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -118,7 +147,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -136,7 +166,7 @@
             
              <!-- Image 05-->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -145,7 +175,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -163,7 +194,7 @@
             
                <!-- Image 06-->
              <FrameLayout 
-                android:layout_width="wrap_content"
+               android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -172,7 +203,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -190,7 +222,7 @@
             
                <!-- Image 07 -->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -199,7 +231,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -217,7 +250,7 @@
             
                <!-- Image 08 -->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -226,7 +259,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -244,7 +278,7 @@
             
              <!-- Image 09 -->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -253,7 +287,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -271,7 +306,7 @@
             
               <!-- Image 10 -->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -280,7 +315,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -298,7 +334,7 @@
             
              <!-- Image 11 -->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -307,7 +343,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -325,7 +362,7 @@
             
              <!-- Image 12 -->
              <FrameLayout 
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent">
                 
                 <ImageView
@@ -334,7 +371,8 @@
 	            android:layout_height="match_parent"
 	            android:src="@drawable/balloon_pressed"
 	            android:adjustViewBounds="true"
-	            android:padding="4dp"/>
+	            android:padding="4dp"
+	            android:onClick="OnclickListener"/>
                 
             	<TextView
 			    android:layout_width="match_parent" 
@@ -350,8 +388,21 @@
 			    android:textStyle="bold"/>          
             </FrameLayout>
             
-        </LinearLayout>
-        
+               <!-- Footer 01-->
+            <FrameLayout 
+                android:layout_width="100dp"
+                android:layout_height="match_parent">
+            </FrameLayout>
+            
+            <!-- Footer 01-->
+            <FrameLayout 
+                android:layout_width="100dp"
+                android:layout_height="match_parent">
+            </FrameLayout>
+            
+            </LinearLayout>
+            
     </HorizontalScrollView>
+    </FrameLayout>
  
 </LinearLayout>
