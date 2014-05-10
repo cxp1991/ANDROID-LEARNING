@@ -3,57 +3,74 @@ package com.example.horizontial_animation;
 import java.util.ArrayList;
 
 import android.animation.ObjectAnimator;
+import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnDragListener;
 import android.view.View.OnTouchListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+/**
+ * 
+ * @author cxphong
+ * @version 0.1
+ * 
+ * 	Saturday, 10/5/2014
+ * 
+ * License: ???
+ *
+ */
+
+/*
+ * How does program work?
+ * 
+ * 1. Wait until stop scroll
+ * 2. Find scrolled direction (left to right of vice versa)
+ * 3. Depends on direction -> find nearest item  to center.
+ * 4. Ok, smoothscrollto() to wanted position
+ * 
+ * Guys, this code is not perfect, so optimize this if you want:
+ * 
+ * FIXME: Scroll from left to right is not perfect
+ * FIXME: Speed-up calculate nearest item, needn't to calculate all item
+ * 
+ * */
 
 public class MainActivity extends Activity {
 
 
 	////////////////////////
-	ImageView imageView_01;
-	ImageView imageView_02;
-	ImageView imageView_03;
-	ImageView imageView_04;
-	ImageView imageView_05;
-	ImageView imageView_06;
-	ImageView imageView_07;
-	ImageView imageView_08;
-	ImageView imageView_09;
-	ImageView imageView_10;
-	ImageView imageView_11;
-	ImageView imageView_12;
-	int num_image = 12;
+	/* I like number 12 */
+	private ImageView 	imageView_01, imageView_02, imageView_03,
+						imageView_04, imageView_05, imageView_06, imageView_07, 
+						imageView_08, imageView_09, imageView_10 ,imageView_11, 
+						imageView_12;
 	
-	int centerLeftEdge, centerRightEdge;
-	int itemWidth = 200;
-	int screenWidth;
+	private int centerLeftEdge, centerRightEdge;
+	
+	/* In xml layout file  i set image width is 100dp*/
+	private int itemWidth = 200;
+	private int screenWidth;
 	////////////////////////////////////////////
 	HorizontalScrollView hrscrollView;
 	ArrayList<xLocation> arrlocation;
 	private int initialPosition;
-	int indexNereastCenter;
+	private int indexNereastCenter;
     
     /* To get Scroll direction*/
-    float startPosition;
-    float stopPosition;
-    int scrollDirection;
+    private float startPosition;
+    private float stopPosition;
+    private int scrollDirection;
 	
-	private int MAX_LEFT  = -1;
-	private int MAX_RIGHT = -2;
 	private int SCROLL_FROM_RIGHT_TO_LEFT = 0x01;
 	private int SCROLL_FROM_LEFT_TO_RIGHT = 0x02;
 	
-	ArrayList<ImageView> imvList;
+	private ArrayList<ImageView> imvList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,14 +109,15 @@ public class MainActivity extends Activity {
 		
 		/* Get Center location */
 		Display display = getWindowManager().getDefaultDisplay(); 
-		screenWidth = display.getWidth();  // deprecated
+		screenWidth = display.getWidth();  // deprecated but it works, cool
 		centerLeftEdge = screenWidth/2 - 100;
 		centerRightEdge = screenWidth/2 + 100;
 		
-		/* Set 1st item at center at the beginning */
-		ObjectAnimator animator = ObjectAnimator.ofInt(hrscrollView, "scrollX", 140);
-		animator.setDuration(1); // Fast as fast possible
-		animator.start();
+		/* Baby - alot works to do, set width of header & footer again depends on width of screen */
+		LinearLayout headerLinearLayout = (LinearLayout) findViewById(R.id.header);
+		LinearLayout footerLinearLayout = (LinearLayout) findViewById(R.id.footer);
+		headerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
+		footerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
 		
 		/* Scroll */
 		hrscrollView.setOnTouchListener(new OnTouchListener() 
@@ -174,16 +192,13 @@ public class MainActivity extends Activity {
 							int value = 0;
 							
 							if(indexNereastCenter > 0)
-								value = indexNereastCenter*200-60;
-							else if (indexNereastCenter == MAX_LEFT)
-								value = 1*200-60;
-							else if (indexNereastCenter == MAX_RIGHT)
-								value = 12*200-60;
+								value = (indexNereastCenter-1)*itemWidth;
 							
+							/* Cool, I can change speed of scroll using this animation */
 							ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
 										"scrollX", value);
 							
-					 		animator.setDuration(300);
+					 		animator.setDuration(500);
 					 		animator.start();
 						}
 						
@@ -223,9 +238,6 @@ public class MainActivity extends Activity {
 				}
 			}
 
-			/* No item satisfied -> minimum position*/
-			if(arrlocation.size() == 0)
-				return MAX_LEFT;
 		}
 		
 		/* Scroll from right to left */
@@ -241,12 +253,15 @@ public class MainActivity extends Activity {
 				}
 			}
 
-			/* No item satisfied -> maximum position*/
-			if(arrlocation.size() == 0)
-				return MAX_RIGHT;
 		}
 		
 		int nearestIndex;
+		
+		if(arrlocation.size() == 0)
+		{
+			return -1;
+		}
+		
 		nearestIndex = FindMin(arrlocation);
 		return nearestIndex;
 	}

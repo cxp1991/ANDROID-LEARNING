@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
-        android:background="#000000"/>
+        android:background="@android:color/darker_gray"/>
     
     <FrameLayout 
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
                 android:id="@+id/tmpImg"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:background="#88000000"
+                android:background="#000000"
                 android:layout_centerHorizontal="true"
                 android:padding="10dp"/>
         </RelativeLayout>
@@ -41,16 +41,12 @@
                 android:orientation="horizontal">
                 
            <!-- Head 01-->
-            <FrameLayout 
+            <LinearLayout
+                android:id="@+id/header" 
                 android:layout_width="100dp"
-                android:layout_height="match_parent">
-            </FrameLayout>
-            
-            <!-- Head 01-->
-            <FrameLayout 
-                android:layout_width="100dp"
-                android:layout_height="match_parent">
-            </FrameLayout>
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
             
             <!-- Image 01-->
             <FrameLayout 
@@ -388,17 +384,13 @@
 			    android:textStyle="bold"/>          
             </FrameLayout>
             
-               <!-- Footer 01-->
-            <FrameLayout 
-                android:layout_width="100dp"
-                android:layout_height="match_parent">
-            </FrameLayout>
-            
             <!-- Footer 01-->
-            <FrameLayout 
+            <LinearLayout
+                android:id="@+id/footer" 
                 android:layout_width="100dp"
-                android:layout_height="match_parent">
-            </FrameLayout>
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
             
             </LinearLayout>
             
