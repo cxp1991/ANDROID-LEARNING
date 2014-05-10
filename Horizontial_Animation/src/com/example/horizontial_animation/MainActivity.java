@@ -2,14 +2,16 @@ package com.example.horizontial_animation;
 
 import java.util.ArrayList;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.ContactsContract.CommonDataKinds.Im;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnDragListener;
 import android.view.View.OnTouchListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -30,115 +32,229 @@ public class MainActivity extends Activity {
 	ImageView imageView_10;
 	ImageView imageView_11;
 	ImageView imageView_12;
-	ImageView previous_image = null;
 	int num_image = 12;
 	
-	int centerLeftEdge;
-	int rangeToScrollToCenter;
+	int centerLeftEdge, centerRightEdge;
 	int itemWidth = 200;
-	int currentPosition = 0;
 	int screenWidth;
 	////////////////////////////////////////////
 	HorizontalScrollView hrscrollView;
 	ArrayList<xLocation> arrlocation;
+	private int initialPosition;
+	int indexNereastCenter;
+    
+    /* To get Scroll direction*/
+    float startPosition;
+    float stopPosition;
+    int scrollDirection;
+	
+	private int MAX_LEFT  = -1;
+	private int MAX_RIGHT = -2;
+	private int SCROLL_FROM_RIGHT_TO_LEFT = 0x01;
+	private int SCROLL_FROM_LEFT_TO_RIGHT = 0x02;
+	
+	ArrayList<ImageView> imvList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_main);
-	
-	hrscrollView = (HorizontalScrollView)findViewById(R.id.horizontalscrollview);
-	// Get the image view
-	imageView_01 = (ImageView)findViewById(R.id.image_01);
-	imageView_02 = (ImageView)findViewById(R.id.image_02);
-	imageView_03 = (ImageView)findViewById(R.id.image_03);
-	imageView_04 = (ImageView)findViewById(R.id.image_04);
-	imageView_05 = (ImageView)findViewById(R.id.image_05);
-	imageView_06 = (ImageView)findViewById(R.id.image_06);
-	imageView_07 = (ImageView)findViewById(R.id.image_07);
-	imageView_08 = (ImageView)findViewById(R.id.image_08);
-	imageView_09 = (ImageView)findViewById(R.id.image_09);
-	imageView_10 = (ImageView)findViewById(R.id.image_10);
-	imageView_11 = (ImageView)findViewById(R.id.image_11);
-	imageView_12 = (ImageView)findViewById(R.id.image_12);
-	
-	Display display = getWindowManager().getDefaultDisplay(); 
-	screenWidth = display.getWidth();  // deprecated
-	centerLeftEdge = screenWidth/2 - 100;
-
-	hrscrollView.setOnTouchListener(new OnTouchListener() {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 		
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-
-			switch (event.getAction()) 
+		hrscrollView = (HorizontalScrollView)findViewById(R.id.horizontalscrollview);
+		// Get the image view
+		imageView_01 = (ImageView)findViewById(R.id.image_01);
+		imageView_02 = (ImageView)findViewById(R.id.image_02);
+		imageView_03 = (ImageView)findViewById(R.id.image_03);
+		imageView_04 = (ImageView)findViewById(R.id.image_04);
+		imageView_05 = (ImageView)findViewById(R.id.image_05);
+		imageView_06 = (ImageView)findViewById(R.id.image_06);
+		imageView_07 = (ImageView)findViewById(R.id.image_07);
+		imageView_08 = (ImageView)findViewById(R.id.image_08);
+		imageView_09 = (ImageView)findViewById(R.id.image_09);
+		imageView_10 = (ImageView)findViewById(R.id.image_10);
+		imageView_11 = (ImageView)findViewById(R.id.image_11);
+		imageView_12 = (ImageView)findViewById(R.id.image_12);
+		
+		/* Save to arraylist to calculate easily */
+		imvList = new ArrayList<ImageView>();
+		imvList.add(imageView_01);
+		imvList.add(imageView_02);
+		imvList.add(imageView_03);
+		imvList.add(imageView_04);
+		imvList.add(imageView_05);
+		imvList.add(imageView_06);
+		imvList.add(imageView_07);
+		imvList.add(imageView_08);
+		imvList.add(imageView_09);
+		imvList.add(imageView_10);
+		imvList.add(imageView_11);
+		imvList.add(imageView_12);
+		
+		/* Get Center location */
+		Display display = getWindowManager().getDefaultDisplay(); 
+		screenWidth = display.getWidth();  // deprecated
+		centerLeftEdge = screenWidth/2 - 100;
+		centerRightEdge = screenWidth/2 + 100;
+		
+		/* Set 1st item at center at the beginning */
+		ObjectAnimator animator = ObjectAnimator.ofInt(hrscrollView, "scrollX", 140);
+		animator.setDuration(1); // Fast as fast possible
+		animator.start();
+		
+		/* Scroll */
+		hrscrollView.setOnTouchListener(new OnTouchListener() 
+		{
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) 
 			{
-				case MotionEvent.ACTION_UP:
+				switch (event.getAction()) 
+				{
+					/* Just wait to ACTION_UP, we can find scrolled direction
+					 * Don't need to wait scroll stop
+					 * */
+					case MotionEvent.ACTION_DOWN:
+						startPosition = event.getX();
+						break;
 					
-					int itemIndex = FindItemNearestCenter();
-					break;
-	
-				default:
-					break;
-			}
-			
-			return false;
-		}
-		
-		
-		private int FindItemNearestCenter() {
-			
-			int[] location = new int[2];
-			arrlocation = new ArrayList<xLocation>();
-			
-			imageView_01.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(1, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_02.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(2, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_03.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(3, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_04.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(4, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_05.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(5, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_06.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(6, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_07.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(7, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_08.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(8, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_09.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(9, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_10.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(10, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_11.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(11, Math.abs(location[0] - centerLeftEdge)));
-			
-			imageView_12.getLocationOnScreen(location);
-			arrlocation.add(new xLocation(12, Math.abs(location[0] - centerLeftEdge)));
-			
-			int nearestIndex = FindMin(arrlocation);
-			Log.d("TAG", "nearestIndex = " + nearestIndex);
-			
-			return 0;
-		}
+					case MotionEvent.ACTION_UP:
+						stopPosition = event.getX();
+						if (stopPosition - startPosition >= 0)
+							scrollDirection = SCROLL_FROM_LEFT_TO_RIGHT;
+						else
+							scrollDirection = SCROLL_FROM_RIGHT_TO_LEFT;
 
-	});
-	
+						initialPosition = hrscrollView.getScrollX();
+						startCheckStopScroll();
+						break;
+						
+					default:
+						break;
+				}
+				
+				return false;
+			}
+		});
 	}
 	
+	private void startCheckStopScroll() 
+	{
+		Thread checkStopScrollThread = new Thread(startCheckRunnable);
+		checkStopScrollThread.start();
+	}
+	
+	/*
+	 * Wait until Horizontal stop scroll then 
+	 * smooth scroll to wanted position
+	 * */
+	
+	Runnable startCheckRunnable = new Runnable() {
+		
+		@Override
+		public void run() {
+			while (true)
+			{
+				Delay(100);
+				int newPosition = hrscrollView.getScrollX();
+				
+				/* Horizontal Stop scroll */
+				if(initialPosition - newPosition == 0)
+				{
+					Log.e("TAG", "Stop scroll");
+					indexNereastCenter = FindItemNearestCenter();
+					Log.d("TAG", "Nearestindex = " + indexNereastCenter);
+					
+					/* 
+					 * Smooth scroll to wanted position
+					 * */
+					runOnUiThread(new Runnable(){
+
+						@Override
+						public void run() {
+							int value = 0;
+							
+							if(indexNereastCenter > 0)
+								value = indexNereastCenter*200-60;
+							else if (indexNereastCenter == MAX_LEFT)
+								value = 1*200-60;
+							else if (indexNereastCenter == MAX_RIGHT)
+								value = 12*200-60;
+							
+							ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
+										"scrollX", value);
+							
+					 		animator.setDuration(300);
+					 		animator.start();
+						}
+						
+					});
+					
+					break;
+				}
+				else
+				{
+					Delay(100);
+					initialPosition = hrscrollView.getScrollX();
+				}
+			}
+		}
+
+	};
+	
+	/* Find item is nearest center,
+	 * Also depend on scrolling direction
+	 * */
+	
+	private int FindItemNearestCenter() {
+		
+		int[] location = new int[2];
+		arrlocation = new ArrayList<xLocation>();
+		
+		/* Scroll from left to right */
+		if (scrollDirection == SCROLL_FROM_LEFT_TO_RIGHT)
+		{
+			/* Compare RightEdge of item with RightEdge of center */
+			for (int i = 0; i < imvList.size(); i++)
+			{
+				imvList.get(i).getLocationOnScreen(location);
+				if ( ((location[0] + 200) <= centerRightEdge) && (location[0] >= 0))
+				{
+					arrlocation.add(new xLocation(i+1, (location[0] + 200 - centerRightEdge)));
+				}
+			}
+
+			/* No item satisfied -> minimum position*/
+			if(arrlocation.size() == 0)
+				return MAX_LEFT;
+		}
+		
+		/* Scroll from right to left */
+		else if (scrollDirection == SCROLL_FROM_RIGHT_TO_LEFT)
+		{
+			/* Compare LeftEdge of item with LeftEdge of center */
+			for (int i = 0; i < imvList.size(); i++)
+			{
+				imvList.get(i).getLocationOnScreen(location);
+				if (location[0] >= centerLeftEdge)
+				{
+					arrlocation.add(new xLocation(i+1, location[0] - centerLeftEdge));
+				}
+			}
+
+			/* No item satisfied -> maximum position*/
+			if(arrlocation.size() == 0)
+				return MAX_RIGHT;
+		}
+		
+		int nearestIndex;
+		nearestIndex = FindMin(arrlocation);
+		return nearestIndex;
+	}
+	
+	/* Find min value */
 	private int FindMin(ArrayList<xLocation> arrLocation) {
-		 int minIndex = 0;
+		
+		 int minIndex =arrLocation.get(0).getIndex();
 		 int minValue = arrLocation.get(0).getdistanceFromCenter();  
 		  for(int i=1; i < arrLocation.size() ;i++){  
 		    if(arrLocation.get(i).getdistanceFromCenter() < minValue){  
@@ -150,68 +266,26 @@ public class MainActivity extends Activity {
 		  return minIndex; 
 	}
 	
-	public void OnclickListener(View view)
+	/*
+	 * Delay using Thread
+	 * */
+	private void Delay(int time) 
 	{
-		switch (view.getId()) {
-		case R.id.image_01:
-			hrscrollView.smoothScrollBy(400 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 400 -centerLeftEdge;
-			
-			break;
-		case R.id.image_02:
-			hrscrollView.smoothScrollBy(600 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 600 -centerLeftEdge;
-			break;
-		case R.id.image_03:
-			hrscrollView.smoothScrollBy(800 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 800 -centerLeftEdge;
-		
-			break;
-		case R.id.image_04:
-			hrscrollView.smoothScrollBy(1000 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 1000 -centerLeftEdge;
-			
-			break;
-		case R.id.image_05:
-			hrscrollView.smoothScrollBy(1200 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 1200 -centerLeftEdge;
-			break;
-		case R.id.image_06:
-			hrscrollView.smoothScrollBy(1400 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 1400 -centerLeftEdge;
-			break;
-		case R.id.image_07:
-			hrscrollView.smoothScrollBy(1600 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 1600 -centerLeftEdge;
-			break;
-		case R.id.image_08:
-			hrscrollView.smoothScrollBy(1800 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 1800 -centerLeftEdge;
-			break;
-		case R.id.image_09:
-			hrscrollView.smoothScrollBy(2000 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 2000 -centerLeftEdge;
-			break;
-		case R.id.image_10:
-			hrscrollView.smoothScrollBy(2200 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 2200 -centerLeftEdge;
-			break;
-		case R.id.image_11:
-			hrscrollView.smoothScrollBy(2400 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 2400 -centerLeftEdge;
-			break;
-		case R.id.image_12:
-			hrscrollView.smoothScrollBy(2600 - centerLeftEdge - currentPosition, 0);
-			currentPosition = 2600 -centerLeftEdge;
-			break;
-
-		default:
-			break;
-		}
+		try 
+		{
+			Thread.sleep(time);
+		} 
+		catch (InterruptedException e) 
+		{
+			e.printStackTrace();
+		}			
 	}
+
 }
 
-class xLocation {
+/* Object save index & distance from center position of each item */
+class xLocation 
+{
 	private int index;
 	private int distanceFromCenter;
 	
