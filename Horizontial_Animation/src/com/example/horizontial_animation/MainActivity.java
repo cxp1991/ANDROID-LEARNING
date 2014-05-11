@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.animation.ObjectAnimator;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.content.ClipData.Item;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,6 +37,7 @@ import android.widget.LinearLayout;
  * 3. Depends on direction -> find nearest item  to center.
  * 4. Ok, smoothscrollto() to wanted position
  * 
+ * FIXME: item with onclicklistener()
  * */
 
 public class MainActivity extends Activity {
@@ -58,6 +60,7 @@ public class MainActivity extends Activity {
 	ArrayList<xLocation> arrlocation;
 	private int initialPosition;
 	private int indexNereastCenter;
+	private int pointDownIndex;
     
     /* To get Scroll direction*/
     private float startPosition;
@@ -66,6 +69,7 @@ public class MainActivity extends Activity {
 	
 	private int SCROLL_FROM_RIGHT_TO_LEFT = 0x01;
 	private int SCROLL_FROM_LEFT_TO_RIGHT = 0x02;
+	private int ONCLICK_THREADHOLD = 30; //pixel
 	
 	private ArrayList<ImageView> imvList;
 	
@@ -107,7 +111,7 @@ public class MainActivity extends Activity {
 		/* Convert 100dp [width in XML] to pixel */
 		Resources r = getResources();
 		itemWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
-		Log.d("TAG","itemWidth = " + itemWidth);
+		//Log.d("TAG","itemWidth = " + itemWidth);
 		
 		/* Get Center location */
 		Display display = getWindowManager().getDefaultDisplay(); 
@@ -115,13 +119,13 @@ public class MainActivity extends Activity {
 		centerLeftEdge = screenWidth/2 - itemWidth/2;
 		centerRightEdge = screenWidth/2 + itemWidth/2;
 		
-		/* Baby - alot works to do, set width of header & footer again depends on width of screen */
+		/* Set width of header & footer again depends on width of screen */
 		LinearLayout headerLinearLayout = (LinearLayout) findViewById(R.id.header);
 		LinearLayout footerLinearLayout = (LinearLayout) findViewById(R.id.footer);
 		headerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
 		footerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
 		
-		/* Scroll */
+		/* Scroll or Onclick */
 		hrscrollView.setOnTouchListener(new OnTouchListener() 
 		{
 			
@@ -132,6 +136,9 @@ public class MainActivity extends Activity {
 				{
 					/* Just wait to ACTION_UP, we can find scrolled direction
 					 * Don't need to wait scroll stop
+					 * 
+					 * Or event is onclick, not ontouch due to OnClick
+					 * conflicts with onToch in action_down
 					 * */
 					case MotionEvent.ACTION_DOWN:
 						startPosition = event.getX();
@@ -139,13 +146,15 @@ public class MainActivity extends Activity {
 					
 					case MotionEvent.ACTION_UP:
 						stopPosition = event.getX();
-						if (stopPosition - startPosition >= 0)
-							scrollDirection = SCROLL_FROM_LEFT_TO_RIGHT;
+						//Log.d("TAG", "diff = " + (stopPosition - startPosition));
+						if (Math.abs(stopPosition - startPosition) <= ONCLICK_THREADHOLD)
+						{
+							onClickEvent();
+						}
 						else
-							scrollDirection = SCROLL_FROM_RIGHT_TO_LEFT;
-
-						initialPosition = hrscrollView.getScrollX();
-						startCheckStopScroll();
+						{
+							onScrollEvent();
+						}
 						break;
 						
 					default:
@@ -155,20 +164,63 @@ public class MainActivity extends Activity {
 				return false;
 			}
 		});
+	
 	}
 	
-	private void startCheckStopScroll() 
+	private void onScrollEvent() 
 	{
-		Thread checkStopScrollThread = new Thread(startCheckRunnable);
+		if (stopPosition - startPosition >= 0)
+			scrollDirection = SCROLL_FROM_LEFT_TO_RIGHT;
+		else
+			scrollDirection = SCROLL_FROM_RIGHT_TO_LEFT;
+		
+		initialPosition = hrscrollView.getScrollX();
+		Thread checkStopScrollThread = new Thread(checkScrollStopEvent);
 		checkStopScrollThread.start();
 	}
+
+	private void onClickEvent() 
+	{
+		int[] location = new int[2];
+		pointDownIndex = -1;
+		
+		/* Find all items location */
+		for (int i = 0; i < imvList.size(); i++)
+		{
+			imvList.get(i).getLocationOnScreen(location);
+			if ((stopPosition >= location[0]) && (stopPosition <= (location[0] + itemWidth)))
+			{
+				pointDownIndex = i + 1;
+				break;
+			}
+		}
+		
+		//Log.d("TAG", "pointDownIndex = " + pointDownIndex);
+		
+		// Scroll
+		if (pointDownIndex > 0)
+		{
+			runOnUiThread(new Runnable(){
 	
+				@Override
+				public void run() {
+					/* Cool, I can change speed of scroll using this animation */
+					ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
+								"scrollX", (pointDownIndex-1)*itemWidth);
+					
+			 		animator.setDuration(500);
+			 		animator.start();
+				}
+			});
+		}
+	}
+
 	/*
 	 * Wait until Horizontal stop scroll then 
 	 * smooth scroll to wanted position
 	 * */
-	
-	Runnable startCheckRunnable = new Runnable() {
+	Runnable checkScrollStopEvent = new Runnable() 
+	{
 		
 		@Override
 		public void run() {
@@ -180,9 +232,9 @@ public class MainActivity extends Activity {
 				/* Horizontal Stop scroll */
 				if(initialPosition - newPosition == 0)
 				{
-					Log.e("TAG", "Stop scroll");
+					//Log.e("TAG", "Stop scroll");
 					indexNereastCenter = FindItemNearestCenter();
-					Log.d("TAG", "Nearestindex = " + indexNereastCenter);
+					//Log.d("TAG", "Nearestindex = " + indexNereastCenter);
 					
 					/* 
 					 * Smooth scroll to wanted position
@@ -222,7 +274,8 @@ public class MainActivity extends Activity {
 	 * Also depend on scrolling direction
 	 * */
 	
-	private int FindItemNearestCenter() {
+	private int FindItemNearestCenter() 
+	{
 		
 		int[] location = new int[2];
 		arrlocation = new ArrayList<xLocation>();
@@ -317,5 +370,35 @@ class xLocation
 	public int getdistanceFromCenter()
 	{
 		return this.distanceFromCenter;
+	}
+}
+
+/* Item location */
+class ItemLocation 
+{
+	private int index;
+	private int xLeftEdge;
+	private int xRightEdge;
+	
+	public ItemLocation(int index, int xLeftEdge, int xRightEdge)
+	{
+		this.index = index;
+		this.xLeftEdge = xLeftEdge;
+		this.xRightEdge = xRightEdge;
+	}
+	
+	public int getIndex()
+	{
+		return this.index;
+	}
+	
+	public int getXLeftEdge()
+	{
+		return this.xLeftEdge;
+	}
+	
+	public int getXRightEdge()
+	{
+		return this.xRightEdge;
 	}
 }
