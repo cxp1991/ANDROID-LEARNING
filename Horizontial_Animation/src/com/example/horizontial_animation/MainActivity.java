@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import android.animation.ObjectAnimator;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,11 +36,6 @@ import android.widget.LinearLayout;
  * 3. Depends on direction -> find nearest item  to center.
  * 4. Ok, smoothscrollto() to wanted position
  * 
- * Guys, this code is not perfect, so optimize this if you want:
- * 
- * FIXME: Scroll from left to right is not perfect
- * FIXME: Speed-up calculate nearest item, needn't to calculate all item
- * 
  * */
 
 public class MainActivity extends Activity {
@@ -54,7 +51,7 @@ public class MainActivity extends Activity {
 	private int centerLeftEdge, centerRightEdge;
 	
 	/* In xml layout file  i set image width is 100dp*/
-	private int itemWidth = 200;
+	private int itemWidth;
 	private int screenWidth;
 	////////////////////////////////////////////
 	HorizontalScrollView hrscrollView;
@@ -107,11 +104,16 @@ public class MainActivity extends Activity {
 		imvList.add(imageView_11);
 		imvList.add(imageView_12);
 		
+		/* Convert 100dp [width in XML] to pixel */
+		Resources r = getResources();
+		itemWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
+		Log.d("TAG","itemWidth = " + itemWidth);
+		
 		/* Get Center location */
 		Display display = getWindowManager().getDefaultDisplay(); 
 		screenWidth = display.getWidth();  // deprecated but it works, cool
-		centerLeftEdge = screenWidth/2 - 100;
-		centerRightEdge = screenWidth/2 + 100;
+		centerLeftEdge = screenWidth/2 - itemWidth/2;
+		centerRightEdge = screenWidth/2 + itemWidth/2;
 		
 		/* Baby - alot works to do, set width of header & footer again depends on width of screen */
 		LinearLayout headerLinearLayout = (LinearLayout) findViewById(R.id.header);
@@ -232,14 +234,12 @@ public class MainActivity extends Activity {
 			for (int i = 0; i < imvList.size(); i++)
 			{
 				imvList.get(i).getLocationOnScreen(location);
-				if ( ((location[0] + 200) <= centerRightEdge) && (location[0] >= 0))
+				if ( ((location[0] + itemWidth) <= centerRightEdge) && (location[0] + itemWidth >= 0))
 				{
-					arrlocation.add(new xLocation(i+1, (location[0] + 200 - centerRightEdge)));
+					arrlocation.add(new xLocation(i+1, (centerRightEdge - (location[0] + itemWidth))));
 				}
 			}
-
 		}
-		
 		/* Scroll from right to left */
 		else if (scrollDirection == SCROLL_FROM_RIGHT_TO_LEFT)
 		{
@@ -247,12 +247,11 @@ public class MainActivity extends Activity {
 			for (int i = 0; i < imvList.size(); i++)
 			{
 				imvList.get(i).getLocationOnScreen(location);
-				if (location[0] >= centerLeftEdge)
+				if ((location[0] >= centerLeftEdge) && (location[0] <= screenWidth))
 				{
 					arrlocation.add(new xLocation(i+1, location[0] - centerLeftEdge));
 				}
 			}
-
 		}
 		
 		int nearestIndex;
