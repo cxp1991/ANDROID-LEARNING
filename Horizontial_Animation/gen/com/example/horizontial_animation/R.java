@@ -21,20 +21,21 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int balloon_pressed=0x7f020000;
-        public static final int bird=0x7f020001;
-        public static final int flute=0x7f020002;
-        public static final int guitar=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int image_border=0x7f020005;
-        public static final int image_border_top=0x7f020006;
-        public static final int image_transparent_border=0x7f020007;
-        public static final int nokia=0x7f020008;
-        public static final int piano=0x7f020009;
-        public static final int rain=0x7f02000a;
-        public static final int thunder=0x7f02000b;
-        public static final int waterfall=0x7f02000c;
-        public static final int wave=0x7f02000d;
+        public static final int balloon_dark=0x7f020000;
+        public static final int balloon_light=0x7f020001;
+        public static final int bird=0x7f020002;
+        public static final int flute=0x7f020003;
+        public static final int guitar=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int image_border=0x7f020006;
+        public static final int image_border_top=0x7f020007;
+        public static final int image_transparent_border=0x7f020008;
+        public static final int nokia=0x7f020009;
+        public static final int piano=0x7f02000a;
+        public static final int rain=0x7f02000b;
+        public static final int thunder=0x7f02000c;
+        public static final int waterfall=0x7f02000d;
+        public static final int wave=0x7f02000e;
     }
     public static final class id {
         public static final int action_settings=0x7f080011;

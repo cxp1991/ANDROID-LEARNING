@@ -2,13 +2,13 @@ package com.example.horizontial_animation;
 
 import java.util.ArrayList;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
-import android.content.ClipData.Item;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -37,7 +37,6 @@ import android.widget.LinearLayout;
  * 3. Depends on direction -> find nearest item  to center.
  * 4. Ok, smoothscrollto() to wanted position
  * 
- * FIXME: item with onclicklistener()
  * */
 
 public class MainActivity extends Activity {
@@ -50,26 +49,31 @@ public class MainActivity extends Activity {
 						imageView_08, imageView_09, imageView_10 ,imageView_11, 
 						imageView_12;
 	
+	private ImageView centerImv;
 	private int centerLeftEdge, centerRightEdge;
 	
 	/* In xml layout file  i set image width is 100dp*/
 	private int itemWidth;
 	private int screenWidth;
+	private int itemPadding; //dp
 	////////////////////////////////////////////
 	HorizontalScrollView hrscrollView;
 	ArrayList<xLocation> arrlocation;
 	private int initialPosition;
-	private int indexNereastCenter;
+	private int indexNereastCenter = 1;
 	private int pointDownIndex;
+	private int previousCenterIndex = 1;
     
     /* To get Scroll direction*/
     private float startPosition;
     private float stopPosition;
     private int scrollDirection;
-	
+    
+    private int ANIMATION_DURATION = 200; // micro secon
 	private int SCROLL_FROM_RIGHT_TO_LEFT = 0x01;
 	private int SCROLL_FROM_LEFT_TO_RIGHT = 0x02;
-	private int ONCLICK_THREADHOLD = 30; //pixel
+	private int ONCLICK_THREADHOLD; //pixel
+	private int STOP_DISTANCE_THREADHOLD; //pixel
 	
 	private ArrayList<ImageView> imvList;
 	
@@ -113,6 +117,11 @@ public class MainActivity extends Activity {
 		itemWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
 		//Log.d("TAG","itemWidth = " + itemWidth);
 		
+		/* Convert 5dp [width in XML] to pixel */
+		itemPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
+		ONCLICK_THREADHOLD = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, r.getDisplayMetrics());
+		STOP_DISTANCE_THREADHOLD = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, r.getDisplayMetrics());
+		
 		/* Get Center location */
 		Display display = getWindowManager().getDefaultDisplay(); 
 		screenWidth = display.getWidth();  // deprecated but it works, cool
@@ -124,6 +133,10 @@ public class MainActivity extends Activity {
 		LinearLayout footerLinearLayout = (LinearLayout) findViewById(R.id.footer);
 		headerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
 		footerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
+		
+		/* Highlight center item */
+		imvList.get(0).setImageResource(R.drawable.balloon_light);
+		//imvList.get(0).setPadding(0, 0, 0, 0);
 		
 		/* Scroll or Onclick */
 		hrscrollView.setOnTouchListener(new OnTouchListener() 
@@ -194,25 +207,41 @@ public class MainActivity extends Activity {
 				break;
 			}
 		}
-		
-		//Log.d("TAG", "pointDownIndex = " + pointDownIndex);
-		
-		// Scroll
-		if (pointDownIndex > 0)
-		{
-			runOnUiThread(new Runnable(){
-	
-				@Override
-				public void run() {
-					/* Cool, I can change speed of scroll using this animation */
-					ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
-								"scrollX", (pointDownIndex-1)*itemWidth);
 					
-			 		animator.setDuration(500);
-			 		animator.start();
-				}
-			});
-		}
+		ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
+					"scrollX", (pointDownIndex-1)*itemWidth);
+		
+		animator.addListener(new AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator animation) {
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				/* Un-Highlight previous center item */
+		 		centerImv = imvList.get(previousCenterIndex - 1);
+		 		centerImv.setImageResource(R.drawable.balloon_dark);
+		 		//centerImv.setPadding(itemPadding, itemPadding, itemPadding, itemPadding);
+		 		
+		 		/* Highlight center item */
+		 		centerImv = imvList.get(pointDownIndex-1);
+		 		centerImv.setImageResource(R.drawable.balloon_light);
+		 		//centerImv.setPadding(0, 0, 0, 0);
+		 		previousCenterIndex = pointDownIndex;
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator animation) {
+			}
+		});
+		
+ 		animator.setDuration(ANIMATION_DURATION);
+ 		animator.start();
 	}
 
 	/*
@@ -251,8 +280,36 @@ public class MainActivity extends Activity {
 							/* Cool, I can change speed of scroll using this animation */
 							ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
 										"scrollX", value);
+							animator.addListener(new AnimatorListener() {
+								
+								@Override
+								public void onAnimationStart(Animator animation) {
+								}
+								
+								@Override
+								public void onAnimationRepeat(Animator animation) {
+								}
+								
+								@Override
+								public void onAnimationEnd(Animator animation) {
+									/* Un-Highlight previous center item */
+							 		centerImv = imvList.get(previousCenterIndex - 1);
+							 		centerImv.setImageResource(R.drawable.balloon_dark);
+							 		//centerImv.setPadding(itemPadding, itemPadding, itemPadding, itemPadding);
+							 		
+							 		/* Highlight center item */
+							 		centerImv = imvList.get(indexNereastCenter-1);
+							 		centerImv.setImageResource(R.drawable.balloon_light);
+							 		//centerImv.setPadding(0, 0, 0, 0);
+							 		previousCenterIndex = indexNereastCenter;
+								}
+								
+								@Override
+								public void onAnimationCancel(Animator animation) {
+								}
+							});
 							
-					 		animator.setDuration(500);
+					 		animator.setDuration(ANIMATION_DURATION);
 					 		animator.start();
 						}
 						
@@ -318,7 +375,7 @@ public class MainActivity extends Activity {
 		return nearestIndex;
 	}
 	
-	/* Find min value */
+	/* Find minimum value */
 	private int FindMin(ArrayList<xLocation> arrLocation) {
 		
 		 int minIndex =arrLocation.get(0).getIndex();

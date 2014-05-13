@@ -9,8 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="8"
-        android:background="@android:color/darker_gray"/>
+        android:layout_weight="8"/>
     
     <FrameLayout 
         android:layout_width="match_parent"
@@ -24,7 +23,6 @@
                 android:id="@+id/tmpImg"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:background="#000000"
                 android:layout_centerHorizontal="true"
                 android:padding="10dp"/>
         </RelativeLayout>
@@ -57,7 +55,7 @@
 	            android:id="@+id/image_01"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -85,7 +83,7 @@
 	            android:id="@+id/image_02"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -113,7 +111,7 @@
 	            android:id="@+id/image_03"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -141,7 +139,7 @@
 	            android:id="@+id/image_04"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -169,7 +167,7 @@
 	            android:id="@+id/image_05"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -197,7 +195,7 @@
 	            android:id="@+id/image_06"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -225,7 +223,7 @@
 	            android:id="@+id/image_07"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -253,7 +251,7 @@
 	            android:id="@+id/image_08"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -281,7 +279,7 @@
 	            android:id="@+id/image_09"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -309,7 +307,7 @@
 	            android:id="@+id/image_10"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -337,7 +335,7 @@
 	            android:id="@+id/image_11"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
@@ -365,7 +363,7 @@
 	            android:id="@+id/image_12"
 	            android:layout_width="match_parent"
 	            android:layout_height="match_parent"
-	            android:src="@drawable/balloon_pressed"
+	            android:src="@drawable/balloon_dark"
 	            android:adjustViewBounds="true"
 	            android:padding="10dp"
 	            /> <!--android:onClick="OnclickListener"-->
