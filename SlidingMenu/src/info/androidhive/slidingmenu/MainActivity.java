@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -119,6 +120,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
+			Log.i("SlideMenuClickListener","SlideMenuClickListener");
 			// display view for selected nav drawer item
 			displayView(position);
 		}
@@ -160,14 +162,18 @@ public class MainActivity extends Activity {
 	 * Diplaying fragment view for selected nav drawer list item
 	 * */
 	private void displayView(int position) {
+		Log.i("displayView", "displayView");
 		// update the main content by replacing fragments
 		Fragment fragment = null;
+		Intent intent = null; 
 		switch (position) {
 		case 0:
 			fragment = new HomeFragment();
+			//intent = new Intent(this, Activity1.class);
 			break;
 		case 1:
 			fragment = new FindPeopleFragment();
+			//new Intent(this, Activity2.class);
 			break;
 		case 2:
 			fragment = new PhotosFragment();
@@ -186,10 +192,12 @@ public class MainActivity extends Activity {
 			break;
 		}
 
+		//startActivity(intent);
+		
 		if (fragment != null) {
 			FragmentManager fragmentManager = getFragmentManager();
 			fragmentManager.beginTransaction()
-					.replace(R.id.frame_container, fragment).commit();
+				.replace(R.id.frame_container, fragment).commit();
 
 			// update selected item and title, then close the drawer
 			mDrawerList.setItemChecked(position, true);
@@ -204,6 +212,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void setTitle(CharSequence title) {
+		Log.i("setTitle", "setTitle");
 		mTitle = title;
 		getActionBar().setTitle(mTitle);
 	}

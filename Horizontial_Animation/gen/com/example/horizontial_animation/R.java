@@ -9,6 +9,15 @@ package com.example.horizontial_animation;
 
 public final class R {
     public static final class attr {
+        /** <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int color=0x7f010000;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -17,8 +26,8 @@ public final class R {
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f040000;
-        public static final int activity_vertical_margin=0x7f040001;
+        public static final int activity_horizontal_margin=0x7f060000;
+        public static final int activity_vertical_margin=0x7f060001;
     }
     public static final class drawable {
         public static final int balloon_dark=0x7f020000;
@@ -36,37 +45,81 @@ public final class R {
         public static final int thunder=0x7f02000c;
         public static final int waterfall=0x7f02000d;
         public static final int wave=0x7f02000e;
+        public static final int whistle=0x7f02000f;
     }
     public static final class id {
-        public static final int action_settings=0x7f080011;
-        public static final int footer=0x7f080010;
-        public static final int header=0x7f080003;
-        public static final int horizontalscrollview=0x7f080002;
-        public static final int image_01=0x7f080004;
-        public static final int image_02=0x7f080005;
-        public static final int image_03=0x7f080006;
-        public static final int image_04=0x7f080007;
-        public static final int image_05=0x7f080008;
-        public static final int image_06=0x7f080009;
-        public static final int image_07=0x7f08000a;
-        public static final int image_08=0x7f08000b;
-        public static final int image_09=0x7f08000c;
-        public static final int image_10=0x7f08000d;
-        public static final int image_11=0x7f08000e;
-        public static final int image_12=0x7f08000f;
-        public static final int ln_main=0x7f080000;
-        public static final int tmpImg=0x7f080001;
+        public static final int action_settings=0x7f09002a;
+        public static final int bgrimg=0x7f090011;
+        public static final int blue=0x7f090029;
+        public static final int blueLabel=0x7f090028;
+        public static final int footer=0x7f090021;
+        public static final int green=0x7f090027;
+        public static final int greenLabel=0x7f090026;
+        public static final int header=0x7f090014;
+        public static final int hrScrollviewMusic=0x7f090013;
+        public static final int hrScrollviewringtone=0x7f090002;
+        public static final int image_01=0x7f090015;
+        public static final int image_02=0x7f090016;
+        public static final int image_03=0x7f090017;
+        public static final int image_04=0x7f090018;
+        public static final int image_05=0x7f090019;
+        public static final int image_06=0x7f09001a;
+        public static final int image_07=0x7f09001b;
+        public static final int image_08=0x7f09001c;
+        public static final int image_09=0x7f09001d;
+        public static final int image_10=0x7f09001e;
+        public static final int image_11=0x7f09001f;
+        public static final int image_12=0x7f090020;
+        public static final int ln_main=0x7f090000;
+        public static final int mixer=0x7f090022;
+        public static final int red=0x7f090025;
+        public static final int redLabel=0x7f090024;
+        public static final int ringtonefooter=0x7f090010;
+        public static final int ringtoneheader=0x7f090003;
+        public static final int ringtoneimage_01=0x7f090004;
+        public static final int ringtoneimage_02=0x7f090005;
+        public static final int ringtoneimage_03=0x7f090006;
+        public static final int ringtoneimage_04=0x7f090007;
+        public static final int ringtoneimage_05=0x7f090008;
+        public static final int ringtoneimage_06=0x7f090009;
+        public static final int ringtoneimage_07=0x7f09000a;
+        public static final int ringtoneimage_08=0x7f09000b;
+        public static final int ringtoneimage_09=0x7f09000c;
+        public static final int ringtoneimage_10=0x7f09000d;
+        public static final int ringtoneimage_11=0x7f09000e;
+        public static final int ringtoneimage_12=0x7f09000f;
+        public static final int ringtonetmpImg=0x7f090001;
+        public static final int swatch=0x7f090023;
+        public static final int tmpImg=0x7f090012;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
+        public static final int cwac_colormixer_activity=0x7f030001;
+        public static final int cwac_colormixer_main=0x7f030002;
     }
     public static final class menu {
-        public static final int main=0x7f070000;
+        public static final int main=0x7f080000;
+    }
+    public static final class raw {
+        public static final int cicada=0x7f040000;
+        public static final int flute=0x7f040001;
+        public static final int frog=0x7f040002;
+        public static final int nighttime=0x7f040003;
+        public static final int rain=0x7f040004;
+        public static final int river=0x7f040005;
+        public static final int thunder=0x7f040006;
+        public static final int whistle=0x7f040007;
+        public static final int wind=0x7f040008;
     }
     public static final class string {
-        public static final int action_settings=0x7f050001;
-        public static final int app_name=0x7f050000;
-        public static final int hello_world=0x7f050002;
+        public static final int action_settings=0x7f050006;
+        public static final int app_name=0x7f050005;
+        public static final int cwac_colormixer_blue=0x7f050002;
+        public static final int cwac_colormixer_cancel=0x7f050004;
+        public static final int cwac_colormixer_green=0x7f050001;
+        public static final int cwac_colormixer_red=0x7f050000;
+        public static final int cwac_colormixer_set=0x7f050003;
+        public static final int hello_world=0x7f050007;
     }
     public static final class style {
         /** 
@@ -90,10 +143,40 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f060000;
+        public static final int AppBaseTheme=0x7f070000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f060001;
+        public static final int AppTheme=0x7f070001;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a ColorMixer.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #ColorMixer_color com.example.horizontial_animation:color}</code></td><td></td></tr>
+           </table>
+           @see #ColorMixer_color
+         */
+        public static final int[] ColorMixer = {
+            0x7f010000
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.example.horizontial_animation.R.attr#color}
+          attribute's value can be found in the {@link #ColorMixer} array.
+
+
+          <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name com.example.horizontial_animation:color
+        */
+        public static final int ColorMixer_color = 0;
+    };
 }

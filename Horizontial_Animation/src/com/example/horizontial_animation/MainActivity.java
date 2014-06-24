@@ -8,6 +8,7 @@ import android.animation.ObjectAnimator;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
@@ -37,90 +38,86 @@ import android.widget.LinearLayout;
  * 3. Depends on direction -> find nearest item  to center.
  * 4. Ok, smoothscrollto() to wanted position
  * 
+ * FIXME: No waiting stop scroll to scroll
  * */
 
-public class MainActivity extends Activity {
-
-
-	////////////////////////
-	/* I like number 12 */
-	private ImageView 	imageView_01, imageView_02, imageView_03,
-						imageView_04, imageView_05, imageView_06, imageView_07, 
-						imageView_08, imageView_09, imageView_10 ,imageView_11, 
-						imageView_12;
+public class MainActivity extends Activity 
+{
+	////////////// RINGTONE /////////////////////////////
+	private ImageView 	ringtoneImgView_01, ringtoneImgView_02, ringtoneImgView_03,
+	ringtoneImgView_04, ringtoneImgView_05, ringtoneImgView_06, ringtoneImgView_07, 
+	ringtoneImgView_08, ringtoneImgView_09, ringtoneImgView_10 ,ringtoneImgView_11, 
+	ringtoneImgView_12;
 	
-	private ImageView centerImv;
-	private int centerLeftEdge, centerRightEdge;
+	private ImageView ringtoneCenterImv;
 	
-	/* In xml layout file  i set image width is 100dp*/
+	HorizontalScrollView ringtoneHrscrollview;
+	ArrayList<xLocation> ringtoneArrlocation;
+	private int ringtoneInitialPosition;
+	private int ringtoneIndexNereastCenter = 1;
+	private int ringtonePointDownIndex;
+	private int ringtonePreviousCenterIndex = 1;
+	private ArrayList<ImageView> ringtoneImgList;
+	
+	private float ringtoneStartPosition;
+    private float ringtoneStopPosition;
+    private int   ringtoneScrollDirection;
+    private ArrayList<RingToneData> ringtoneDataArraylist;
+    MediaPlayer ringtoneMPlayer = null; 
+    private int previousRingtoneIndex = -1;
+    //////////////////////////////////////////////////////
+    
+	//////////// MUSIC ///////////////////
+	private ImageView 	musicImgView_01, musicImgView_02, musicImgView_03,
+						musicImgView_04, musicImgView_05, musicImgView_06, musicImgView_07, 
+						musicImgView_08, musicImgView_09, musicImgView_10 ,musicImgView_11, 
+						musicImgView_12;
+	
+	private ImageView musicCenterImv;
+	HorizontalScrollView musicHrscrollView;
+	ArrayList<xLocation> musicArrlocation;
+	private int musicInitialPosition;
+	private int musicIndexNereastCenter = 1;
+	private int musicPointDownIndex;
+	private int musicPreviousCenterIndex = 1;
+	private ArrayList<ImageView> musicImgList;
+	
+    /* To get Scroll direction */
+    private float musicStartPosition;
+    private float musicStopPosition;
+    private int   musicScrollDirection;
+    //////////////////////////////////////////
+    
+    ////////////// GLOBAL /////////////////////
+    private int centerLeftEdge, centerRightEdge;
 	private int itemWidth;
 	private int screenWidth;
-	private int itemPadding; //dp
-	////////////////////////////////////////////
-	HorizontalScrollView hrscrollView;
-	ArrayList<xLocation> arrlocation;
-	private int initialPosition;
-	private int indexNereastCenter = 1;
-	private int pointDownIndex;
-	private int previousCenterIndex = 1;
+	private int itemPadding; 
+	private ImageView backgroundImv;
     
-    /* To get Scroll direction*/
-    private float startPosition;
-    private float stopPosition;
-    private int scrollDirection;
-    
-    private int ANIMATION_DURATION = 200; // micro secon
+    private int ANIMATION_DURATION = 200; // micro seconds
 	private int SCROLL_FROM_RIGHT_TO_LEFT = 0x01;
 	private int SCROLL_FROM_LEFT_TO_RIGHT = 0x02;
 	private int ONCLICK_THREADHOLD; //pixel
-	private int STOP_DISTANCE_THREADHOLD; //pixel
-	
-	private ArrayList<ImageView> imvList;
+	private int STOP_DISTANCE_THREADHOLD = 0; //pixel
+	////////////////////////////////////////////
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		hrscrollView = (HorizontalScrollView)findViewById(R.id.horizontalscrollview);
-		// Get the image view
-		imageView_01 = (ImageView)findViewById(R.id.image_01);
-		imageView_02 = (ImageView)findViewById(R.id.image_02);
-		imageView_03 = (ImageView)findViewById(R.id.image_03);
-		imageView_04 = (ImageView)findViewById(R.id.image_04);
-		imageView_05 = (ImageView)findViewById(R.id.image_05);
-		imageView_06 = (ImageView)findViewById(R.id.image_06);
-		imageView_07 = (ImageView)findViewById(R.id.image_07);
-		imageView_08 = (ImageView)findViewById(R.id.image_08);
-		imageView_09 = (ImageView)findViewById(R.id.image_09);
-		imageView_10 = (ImageView)findViewById(R.id.image_10);
-		imageView_11 = (ImageView)findViewById(R.id.image_11);
-		imageView_12 = (ImageView)findViewById(R.id.image_12);
-		
-		/* Save to arraylist to calculate easily */
-		imvList = new ArrayList<ImageView>();
-		imvList.add(imageView_01);
-		imvList.add(imageView_02);
-		imvList.add(imageView_03);
-		imvList.add(imageView_04);
-		imvList.add(imageView_05);
-		imvList.add(imageView_06);
-		imvList.add(imageView_07);
-		imvList.add(imageView_08);
-		imvList.add(imageView_09);
-		imvList.add(imageView_10);
-		imvList.add(imageView_11);
-		imvList.add(imageView_12);
-		
+		////////////////// GLOBAL ///////////////////
 		/* Convert 100dp [width in XML] to pixel */
 		Resources r = getResources();
-		itemWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
+		itemWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, r.getDisplayMetrics());
 		//Log.d("TAG","itemWidth = " + itemWidth);
 		
 		/* Convert 5dp [width in XML] to pixel */
 		itemPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
 		ONCLICK_THREADHOLD = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, r.getDisplayMetrics());
-		STOP_DISTANCE_THREADHOLD = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, r.getDisplayMetrics());
+		//STOP_DISTANCE_THREADHOLD = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, r.getDisplayMetrics());
 		
 		/* Get Center location */
 		Display display = getWindowManager().getDefaultDisplay(); 
@@ -128,18 +125,111 @@ public class MainActivity extends Activity {
 		centerLeftEdge = screenWidth/2 - itemWidth/2;
 		centerRightEdge = screenWidth/2 + itemWidth/2;
 		
+		backgroundImv = (ImageView) findViewById(R.id.bgrimg);
+		//////////////////////////////////////////////
+		
+		///////////////////// MUSIC ////////////////////
+		musicHrscrollView = (HorizontalScrollView)findViewById(R.id.hrScrollviewMusic);
+		// Get the image view
+		musicImgView_01 = (ImageView)findViewById(R.id.image_01);
+		musicImgView_02 = (ImageView)findViewById(R.id.image_02);
+		musicImgView_03 = (ImageView)findViewById(R.id.image_03);
+		musicImgView_04 = (ImageView)findViewById(R.id.image_04);
+		musicImgView_05 = (ImageView)findViewById(R.id.image_05);
+		musicImgView_06 = (ImageView)findViewById(R.id.image_06);
+		musicImgView_07 = (ImageView)findViewById(R.id.image_07);
+		musicImgView_08 = (ImageView)findViewById(R.id.image_08);
+		musicImgView_09 = (ImageView)findViewById(R.id.image_09);
+		musicImgView_10 = (ImageView)findViewById(R.id.image_10);
+		musicImgView_11 = (ImageView)findViewById(R.id.image_11);
+		musicImgView_12 = (ImageView)findViewById(R.id.image_12);
+		
+		/* Save to arraylist to calculate easily */
+		musicImgList = new ArrayList<ImageView>();
+		musicImgList.add(musicImgView_01);
+		musicImgList.add(musicImgView_02);
+		musicImgList.add(musicImgView_03);
+		musicImgList.add(musicImgView_04);
+		musicImgList.add(musicImgView_05);
+		musicImgList.add(musicImgView_06);
+		musicImgList.add(musicImgView_07);
+		musicImgList.add(musicImgView_08);
+		musicImgList.add(musicImgView_09);
+		musicImgList.add(musicImgView_10);
+		musicImgList.add(musicImgView_11);
+		musicImgList.add(musicImgView_12);
+		
 		/* Set width of header & footer again depends on width of screen */
-		LinearLayout headerLinearLayout = (LinearLayout) findViewById(R.id.header);
-		LinearLayout footerLinearLayout = (LinearLayout) findViewById(R.id.footer);
-		headerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
-		footerLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
+		LinearLayout musicHeaderLinearLayout = (LinearLayout) findViewById(R.id.header);
+		LinearLayout musicFooterLinearLayout = (LinearLayout) findViewById(R.id.footer);
+		musicHeaderLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
+		musicFooterLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
 		
 		/* Highlight center item */
-		imvList.get(0).setImageResource(R.drawable.balloon_light);
-		//imvList.get(0).setPadding(0, 0, 0, 0);
+		musicImgList.get(0).setImageResource(R.drawable.balloon_light);
 		
-		/* Scroll or Onclick */
-		hrscrollView.setOnTouchListener(new OnTouchListener() 
+		///////////////////// RINGTONE ////////////////////
+		ringtoneDataArraylist = new ArrayList<MainActivity.RingToneData>();
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.whistle));//09
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.flute));//08
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.river)); //01
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.rain));//02
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.thunder));//03
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.wind));//04
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.frog));//05
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.cicada));//06
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.nighttime));//07
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.nighttime));//07
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.nighttime));//07
+		ringtoneDataArraylist.add(new RingToneData(0, R.raw.nighttime));//07
+		
+	
+		
+		
+		ringtoneHrscrollview = (HorizontalScrollView)findViewById(R.id.hrScrollviewringtone);
+		
+		// Get the image view
+		ringtoneImgView_01 = (ImageView)findViewById(R.id.ringtoneimage_01);
+		ringtoneImgView_02 = (ImageView)findViewById(R.id.ringtoneimage_02);
+		ringtoneImgView_03 = (ImageView)findViewById(R.id.ringtoneimage_03);
+		ringtoneImgView_04 = (ImageView)findViewById(R.id.ringtoneimage_04);
+		ringtoneImgView_05 = (ImageView)findViewById(R.id.ringtoneimage_05);
+		ringtoneImgView_06 = (ImageView)findViewById(R.id.ringtoneimage_06);
+		ringtoneImgView_07 = (ImageView)findViewById(R.id.ringtoneimage_07);
+		ringtoneImgView_08 = (ImageView)findViewById(R.id.ringtoneimage_08);
+		ringtoneImgView_09 = (ImageView)findViewById(R.id.ringtoneimage_09);
+		ringtoneImgView_10 = (ImageView)findViewById(R.id.ringtoneimage_10);
+		ringtoneImgView_11 = (ImageView)findViewById(R.id.ringtoneimage_11);
+		ringtoneImgView_12 = (ImageView)findViewById(R.id.ringtoneimage_12);
+		
+		/* Save to arraylist to calculate easily */
+		ringtoneImgList = new ArrayList<ImageView>();
+		ringtoneImgList.add(ringtoneImgView_01);
+		ringtoneImgList.add(ringtoneImgView_02);
+		ringtoneImgList.add(ringtoneImgView_03);
+		ringtoneImgList.add(ringtoneImgView_04);
+		ringtoneImgList.add(ringtoneImgView_05);
+		ringtoneImgList.add(ringtoneImgView_06);
+		ringtoneImgList.add(ringtoneImgView_07);
+		ringtoneImgList.add(ringtoneImgView_08);
+		ringtoneImgList.add(ringtoneImgView_09);
+		ringtoneImgList.add(ringtoneImgView_10);
+		ringtoneImgList.add(ringtoneImgView_11);
+		ringtoneImgList.add(ringtoneImgView_12);
+		
+		
+		/* Set width of header & footer again depends on width of screen */
+		LinearLayout ringtoneHeaderLinearLayout = (LinearLayout) findViewById(R.id.ringtoneheader);
+		LinearLayout ringtoneFooterLinearLayout = (LinearLayout) findViewById(R.id.ringtonefooter);
+		ringtoneHeaderLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
+		ringtoneFooterLinearLayout.setLayoutParams(new LinearLayout.LayoutParams(centerLeftEdge, LayoutParams.MATCH_PARENT));
+		
+		/* Highlight center item */
+		ringtoneImgList.get(0).setImageResource(R.drawable.balloon_light);
+		//////////////////////////////////////////////////////////////////
+		
+		/* Scroll or OnClick */ 
+		musicHrscrollView.setOnTouchListener(new OnTouchListener() 
 		{
 			
 			@Override
@@ -147,26 +237,28 @@ public class MainActivity extends Activity {
 			{
 				switch (event.getAction()) 
 				{
-					/* Just wait to ACTION_UP, we can find scrolled direction
-					 * Don't need to wait scroll stop
-					 * 
-					 * Or event is onclick, not ontouch due to OnClick
-					 * conflicts with onToch in action_down
-					 * */
+					 /*
+					  * Just wait to ACTION_UP, we can find scrolled direction
+					  * Don't need to wait scroll stop
+					  * 
+					  * Or event is onclick, not ontouch due to OnClick
+					  * conflicts with onToch in action_down
+					  */
+				
 					case MotionEvent.ACTION_DOWN:
-						startPosition = event.getX();
+						musicStartPosition = event.getX();
 						break;
 					
 					case MotionEvent.ACTION_UP:
-						stopPosition = event.getX();
+						musicStopPosition = event.getX();
 						//Log.d("TAG", "diff = " + (stopPosition - startPosition));
-						if (Math.abs(stopPosition - startPosition) <= ONCLICK_THREADHOLD)
+						if (Math.abs(musicStopPosition - musicStartPosition) <= ONCLICK_THREADHOLD)
 						{
-							onClickEvent();
+							musicOnClickEvent();
 						}
 						else
 						{
-							onScrollEvent();
+							musicOnScrollEvent();
 						}
 						break;
 						
@@ -178,38 +270,80 @@ public class MainActivity extends Activity {
 			}
 		});
 	
-	}
+		/* Scroll or Onclick */ 
+		ringtoneHrscrollview.setOnTouchListener(new OnTouchListener() 
+		{
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) 
+			{
+				switch (event.getAction()) 
+				{
+					 /*
+					  * Just wait to ACTION_UP, we can find scrolled direction
+					  * Don't need to wait scroll stop
+					  * 
+					  * Or event is OnClick, not OnTouch due to OnClick
+					  * conflicts with onToch in action_down
+					  */
+				
+					case MotionEvent.ACTION_DOWN:
+						ringtoneStartPosition = event.getX();
+						break;
+					
+					case MotionEvent.ACTION_UP:
+						ringtoneStopPosition = event.getX();
+						//Log.d("TAG", "diff = " + (stopPosition - startPosition));
+						if (Math.abs(ringtoneStopPosition - ringtoneStartPosition) <= ONCLICK_THREADHOLD)
+						{
+							ringtoneOnClickEvent();
+						}
+						else
+						{
+							ringtoneOnScrollEvent();
+						}
+						break;
+						
+					default:
+						break;
+				}
+				
+				return false;
+			}
+		});
 	
-	private void onScrollEvent() 
+}
+
+	private void musicOnScrollEvent() 
 	{
-		if (stopPosition - startPosition >= 0)
-			scrollDirection = SCROLL_FROM_LEFT_TO_RIGHT;
+		if (musicStopPosition - musicStartPosition >= 0)
+			musicScrollDirection = SCROLL_FROM_LEFT_TO_RIGHT;
 		else
-			scrollDirection = SCROLL_FROM_RIGHT_TO_LEFT;
+			musicScrollDirection = SCROLL_FROM_RIGHT_TO_LEFT;
 		
-		initialPosition = hrscrollView.getScrollX();
-		Thread checkStopScrollThread = new Thread(checkScrollStopEvent);
+		musicInitialPosition = musicHrscrollView.getScrollX();
+		Thread checkStopScrollThread = new Thread(MusicCheckScrollStop);
 		checkStopScrollThread.start();
 	}
 
-	private void onClickEvent() 
+	private void musicOnClickEvent() 
 	{
 		int[] location = new int[2];
-		pointDownIndex = -1;
+		musicPointDownIndex = -1;
 		
-		/* Find all items location */
-		for (int i = 0; i < imvList.size(); i++)
+		// Find all items location 
+		for (int i = 0; i < musicImgList.size(); i++)
 		{
-			imvList.get(i).getLocationOnScreen(location);
-			if ((stopPosition >= location[0]) && (stopPosition <= (location[0] + itemWidth)))
+			musicImgList.get(i).getLocationOnScreen(location);
+			if ((musicStopPosition >= location[0]) && (musicStopPosition <= (location[0] + itemWidth)))
 			{
-				pointDownIndex = i + 1;
+				musicPointDownIndex = i + 1;
 				break;
 			}
 		}
 					
-		ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
-					"scrollX", (pointDownIndex-1)*itemWidth);
+		ObjectAnimator animator=ObjectAnimator.ofInt(musicHrscrollView, 
+					"scrollX", (musicPointDownIndex-1)*itemWidth);
 		
 		animator.addListener(new AnimatorListener() {
 			
@@ -223,16 +357,14 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onAnimationEnd(Animator animation) {
-				/* Un-Highlight previous center item */
-		 		centerImv = imvList.get(previousCenterIndex - 1);
-		 		centerImv.setImageResource(R.drawable.balloon_dark);
-		 		//centerImv.setPadding(itemPadding, itemPadding, itemPadding, itemPadding);
+				// Un-Highlight previous center item 
+		 		musicCenterImv = musicImgList.get(musicPreviousCenterIndex - 1);
+		 		musicCenterImv.setImageResource(R.drawable.balloon_dark);
 		 		
-		 		/* Highlight center item */
-		 		centerImv = imvList.get(pointDownIndex-1);
-		 		centerImv.setImageResource(R.drawable.balloon_light);
-		 		//centerImv.setPadding(0, 0, 0, 0);
-		 		previousCenterIndex = pointDownIndex;
+		 		// Highlight center item 
+		 		musicCenterImv = musicImgList.get(musicPointDownIndex-1);
+		 		musicCenterImv.setImageResource(R.drawable.balloon_light);
+		 		musicPreviousCenterIndex = musicPointDownIndex;
 			}
 			
 			@Override
@@ -242,43 +374,45 @@ public class MainActivity extends Activity {
 		
  		animator.setDuration(ANIMATION_DURATION);
  		animator.start();
+
 	}
 
 	/*
 	 * Wait until Horizontal stop scroll then 
 	 * smooth scroll to wanted position
-	 * */
-	Runnable checkScrollStopEvent = new Runnable() 
+	 */
+	
+	Runnable MusicCheckScrollStop = new Runnable() 
 	{
-		
 		@Override
 		public void run() {
 			while (true)
 			{
 				Delay(100);
-				int newPosition = hrscrollView.getScrollX();
+				int newPosition = musicHrscrollView.getScrollX();
 				
-				/* Horizontal Stop scroll */
-				if(initialPosition - newPosition == 0)
+				/* Horizontal Stop scroll */ 
+				if(musicInitialPosition - newPosition == 0)
 				{
 					//Log.e("TAG", "Stop scroll");
-					indexNereastCenter = FindItemNearestCenter();
-					//Log.d("TAG", "Nearestindex = " + indexNereastCenter);
+					musicIndexNereastCenter = MusicFindItemNearestCenter();
+					//Log.d("TAG", "Nearestindex = " + musicIndexNereastCenter);
 					
-					/* 
-					 * Smooth scroll to wanted position
-					 * */
+					 
+					 /*
+					  *  Smooth scroll to wanted position
+					  */
 					runOnUiThread(new Runnable(){
 
 						@Override
 						public void run() {
 							int value = 0;
 							
-							if(indexNereastCenter > 0)
-								value = (indexNereastCenter-1)*itemWidth;
+							if(musicIndexNereastCenter > 0)
+								value = (musicIndexNereastCenter-1)*itemWidth;
 							
-							/* Cool, I can change speed of scroll using this animation */
-							ObjectAnimator animator=ObjectAnimator.ofInt(hrscrollView, 
+							/* Cool, I can change speed of scroll using this animation */ 
+							ObjectAnimator animator=ObjectAnimator.ofInt(musicHrscrollView, 
 										"scrollX", value);
 							animator.addListener(new AnimatorListener() {
 								
@@ -292,16 +426,16 @@ public class MainActivity extends Activity {
 								
 								@Override
 								public void onAnimationEnd(Animator animation) {
-									/* Un-Highlight previous center item */
-							 		centerImv = imvList.get(previousCenterIndex - 1);
-							 		centerImv.setImageResource(R.drawable.balloon_dark);
-							 		//centerImv.setPadding(itemPadding, itemPadding, itemPadding, itemPadding);
+									//Un-Highlight previous center item 
+							 		musicCenterImv = musicImgList.get(musicPreviousCenterIndex - 1);
+							 		musicCenterImv.setImageResource(R.drawable.balloon_dark);
+							 		//musicCenterImv.setPadding(itemPadding, itemPadding, itemPadding, itemPadding);
 							 		
-							 		/* Highlight center item */
-							 		centerImv = imvList.get(indexNereastCenter-1);
-							 		centerImv.setImageResource(R.drawable.balloon_light);
-							 		//centerImv.setPadding(0, 0, 0, 0);
-							 		previousCenterIndex = indexNereastCenter;
+							 		//Highlight center item 
+							 		musicCenterImv = musicImgList.get(musicIndexNereastCenter-1);
+							 		musicCenterImv.setImageResource(R.drawable.balloon_light);
+							 		//musicCenterImv.setPadding(0, 0, 0, 0);
+							 		musicPreviousCenterIndex = musicIndexNereastCenter;
 								}
 								
 								@Override
@@ -320,79 +454,298 @@ public class MainActivity extends Activity {
 				else
 				{
 					Delay(100);
-					initialPosition = hrscrollView.getScrollX();
+					musicInitialPosition = musicHrscrollView.getScrollX();
 				}
 			}
 		}
-
+		
 	};
 	
-	/* Find item is nearest center,
+	/*
+	 Find item is nearest center,
 	 * Also depend on scrolling direction
-	 * */
-	
-	private int FindItemNearestCenter() 
+	 */
+	private int MusicFindItemNearestCenter() 
 	{
 		
 		int[] location = new int[2];
-		arrlocation = new ArrayList<xLocation>();
+		musicArrlocation = new ArrayList<xLocation>();
 		
-		/* Scroll from left to right */
-		if (scrollDirection == SCROLL_FROM_LEFT_TO_RIGHT)
+		// Scroll from left to right 
+		if (musicScrollDirection == SCROLL_FROM_LEFT_TO_RIGHT)
 		{
-			/* Compare RightEdge of item with RightEdge of center */
-			for (int i = 0; i < imvList.size(); i++)
+			// Compare RightEdge of item with RightEdge of center 
+			for (int i = 0; i < musicImgList.size(); i++)
 			{
-				imvList.get(i).getLocationOnScreen(location);
+				musicImgList.get(i).getLocationOnScreen(location);
 				if ( ((location[0] + itemWidth) <= centerRightEdge) && (location[0] + itemWidth >= 0))
 				{
-					arrlocation.add(new xLocation(i+1, (centerRightEdge - (location[0] + itemWidth))));
+					musicArrlocation.add(new xLocation(i+1, (centerRightEdge - (location[0] + itemWidth))));
 				}
 			}
 		}
-		/* Scroll from right to left */
-		else if (scrollDirection == SCROLL_FROM_RIGHT_TO_LEFT)
+		// Scroll from right to left 
+		else if (musicScrollDirection == SCROLL_FROM_RIGHT_TO_LEFT)
 		{
-			/* Compare LeftEdge of item with LeftEdge of center */
-			for (int i = 0; i < imvList.size(); i++)
+			// Compare LeftEdge of item with LeftEdge of center 
+			for (int i = 0; i < musicImgList.size(); i++)
 			{
-				imvList.get(i).getLocationOnScreen(location);
+				musicImgList.get(i).getLocationOnScreen(location);
 				if ((location[0] >= centerLeftEdge) && (location[0] <= screenWidth))
 				{
-					arrlocation.add(new xLocation(i+1, location[0] - centerLeftEdge));
+					musicArrlocation.add(new xLocation(i+1, location[0] - centerLeftEdge));
 				}
 			}
 		}
 		
 		int nearestIndex;
 		
-		if(arrlocation.size() == 0)
+		if (musicArrlocation.size() == 0)
 		{
 			return -1;
 		}
 		
-		nearestIndex = FindMin(arrlocation);
+		nearestIndex = FindMin(musicArrlocation);
 		return nearestIndex;
 	}
 	
-	/* Find minimum value */
-	private int FindMin(ArrayList<xLocation> arrLocation) {
+	///////////////////// RINGTONE //////////////////////
+	private void ringtoneOnScrollEvent() 
+	{
+		if (ringtoneStopPosition - ringtoneStartPosition >= 0)
+			ringtoneScrollDirection = SCROLL_FROM_LEFT_TO_RIGHT;
+		else
+			ringtoneScrollDirection = SCROLL_FROM_RIGHT_TO_LEFT;
 		
-		 int minIndex =arrLocation.get(0).getIndex();
-		 int minValue = arrLocation.get(0).getdistanceFromCenter();  
-		  for(int i=1; i < arrLocation.size() ;i++){  
-		    if(arrLocation.get(i).getdistanceFromCenter() < minValue){  
-		      minValue = arrLocation.get(i).getdistanceFromCenter();
-		      minIndex = arrLocation.get(i).getIndex();
+		ringtoneInitialPosition = ringtoneHrscrollview.getScrollX();
+		Thread checkStopScrollThread = new Thread(RingtoneCheckScrollStop);
+		checkStopScrollThread.start();
+	}
+
+	private void ringtoneOnClickEvent() 
+	{
+		int[] location = new int[2];
+		ringtonePointDownIndex = -1;
+		
+		// Find all items location 
+		for (int i = 0; i < ringtoneImgList.size(); i++)
+		{
+			ringtoneImgList.get(i).getLocationOnScreen(location);
+			if ((ringtoneStopPosition >= location[0]) && (ringtoneStopPosition <= (location[0] + itemWidth)))
+			{
+				ringtonePointDownIndex = i + 1;
+				break;
+			}
+		}
+					
+		ObjectAnimator animator=ObjectAnimator.ofInt(ringtoneHrscrollview, 
+					"scrollX", (ringtonePointDownIndex-1)*itemWidth);
+		
+		animator.addListener(new AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator animation) {
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				// Un-Highlight previous center item 
+		 		ringtoneCenterImv = ringtoneImgList.get(ringtonePreviousCenterIndex - 1);
+		 		ringtoneCenterImv.setImageResource(R.drawable.balloon_dark);
+		 		
+		 		// Highlight center item 
+		 		ringtoneCenterImv = ringtoneImgList.get(ringtonePointDownIndex-1);
+		 		ringtoneCenterImv.setImageResource(R.drawable.balloon_light);
+		 		ringtonePreviousCenterIndex = ringtonePointDownIndex;
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator animation) {
+			}
+		});
+		
+ 		animator.setDuration(ANIMATION_DURATION);
+ 		animator.start();
+		
+		if (ringtoneDataArraylist.get(ringtonePointDownIndex-1).getStatus() == 0)
+		{
+			if (ringtoneMPlayer != null)
+			{
+				ringtoneMPlayer.stop();
+				ringtoneDataArraylist.get(previousRingtoneIndex).setStatus(0);
+			}
+			
+			ringtoneMPlayer = MediaPlayer.create(this, ringtoneDataArraylist.get(ringtonePointDownIndex-1).getRingtoneId());
+			ringtoneMPlayer.start();
+			ringtoneMPlayer.setLooping(true);
+			ringtoneDataArraylist.get(ringtonePointDownIndex-1).setStatus(1);
+			previousRingtoneIndex = ringtonePointDownIndex-1;
+			//backgroundImv.setImageResource(R.drawable.whistle);
+		}
+		else
+		{
+			ringtoneMPlayer.stop();
+			ringtoneDataArraylist.get(ringtonePointDownIndex-1).setStatus(0);
+		}
+		
+	}
+
+	/*
+	 * Wait until Horizontal stop scroll then 
+	 * smooth scroll to wanted position
+	 */
+	
+	Runnable RingtoneCheckScrollStop = new Runnable()
+	{
+		
+		@Override
+		public void run() {
+			while (true)
+			{
+				Delay(100);
+				int newPosition = ringtoneHrscrollview.getScrollX();
+				
+				/* Horizontal Stop scroll */ 
+				if(ringtoneInitialPosition - newPosition == 0)
+				{
+					//Log.e("TAG", "Stop scroll");
+					ringtoneIndexNereastCenter = RingtoneFindItemNearestCenter();
+					//Log.d("TAG", "Nearestindex = " + ringtoneIndexNereastCenter);
+					
+					 
+					 /*
+					  *  Smooth scroll to wanted position
+					  */
+					runOnUiThread(new Runnable(){
+
+						@Override
+						public void run() {
+							int value = 0;
+							
+							if(ringtoneIndexNereastCenter > 0)
+								value = (ringtoneIndexNereastCenter-1)*itemWidth;
+							
+							/* Cool, I can change speed of scroll using this animation */ 
+							ObjectAnimator animator=ObjectAnimator.ofInt(ringtoneHrscrollview, 
+										"scrollX", value);
+							animator.addListener(new AnimatorListener() {
+								
+								@Override
+								public void onAnimationStart(Animator animation) {
+								}
+								
+								@Override
+								public void onAnimationRepeat(Animator animation) {
+								}
+								
+								@Override
+								public void onAnimationEnd(Animator animation) {
+									//Un-Highlight previous center item 
+							 		ringtoneCenterImv = ringtoneImgList.get(ringtonePreviousCenterIndex - 1);
+							 		ringtoneCenterImv.setImageResource(R.drawable.balloon_dark);
+							 		//ringtoneCenterImv.setPadding(itemPadding, itemPadding, itemPadding, itemPadding);
+							 		
+							 		//Highlight center item 
+							 		ringtoneCenterImv = ringtoneImgList.get(ringtoneIndexNereastCenter-1);
+							 		ringtoneCenterImv.setImageResource(R.drawable.balloon_light);
+							 		//ringtoneCenterImv.setPadding(0, 0, 0, 0);
+							 		ringtonePreviousCenterIndex = ringtoneIndexNereastCenter;
+								}
+								
+								@Override
+								public void onAnimationCancel(Animator animation) {
+								}
+							});
+							
+					 		animator.setDuration(ANIMATION_DURATION);
+					 		animator.start();
+						}
+						
+					});
+					
+					break;
+				}
+				else
+				{
+					Delay(100);
+					ringtoneInitialPosition = ringtoneHrscrollview.getScrollX();
+				}
+			}
+		}
+		
+	};
+	
+	/*
+	 Find item is nearest center,
+	 * Also depend on scrolling direction
+	 */
+	private int RingtoneFindItemNearestCenter() 
+	{
+		
+		int[] location = new int[2];
+		ringtoneArrlocation = new ArrayList<xLocation>();
+		
+		// Scroll from left to right 
+		if (ringtoneScrollDirection == SCROLL_FROM_LEFT_TO_RIGHT)
+		{
+			// Compare RightEdge of item with RightEdge of center 
+			for (int i = 0; i < ringtoneImgList.size(); i++)
+			{
+				ringtoneImgList.get(i).getLocationOnScreen(location);
+				if ( ((location[0] + itemWidth) <= centerRightEdge) && (location[0] + itemWidth >= 0))
+				{
+					ringtoneArrlocation.add(new xLocation(i+1, (centerRightEdge - (location[0] + itemWidth))));
+				}
+			}
+		}
+		// Scroll from right to left 
+		else if (ringtoneScrollDirection == SCROLL_FROM_RIGHT_TO_LEFT)
+		{
+			// Compare LeftEdge of item with LeftEdge of center 
+			for (int i = 0; i < ringtoneImgList.size(); i++)
+			{
+				ringtoneImgList.get(i).getLocationOnScreen(location);
+				if ((location[0] >= centerLeftEdge) && (location[0] <= screenWidth))
+				{
+					ringtoneArrlocation.add(new xLocation(i+1, location[0] - centerLeftEdge));
+				}
+			}
+		}
+		
+		int nearestIndex;
+		
+		if (ringtoneArrlocation.size() == 0)
+		{
+			return -1;
+		}
+		
+		nearestIndex = FindMin(ringtoneArrlocation);
+		return nearestIndex;
+	}
+	////////////////////////////////////////////////////
+	
+	 //Find minimum value 
+	private int FindMin(ArrayList<xLocation> musicArrlocation) 
+	{
+		
+		 int minIndex =musicArrlocation.get(0).getIndex();
+		 int minValue = musicArrlocation.get(0).getdistanceFromCenter();  
+		  for(int i=1; i < musicArrlocation.size() ;i++){  
+		    if(musicArrlocation.get(i).getdistanceFromCenter() < minValue){  
+		      minValue = musicArrlocation.get(i).getdistanceFromCenter();
+		      minIndex = musicArrlocation.get(i).getIndex();
 		    }  
 		  }  
 		  
 		  return minIndex; 
 	}
 	
-	/*
-	 * Delay using Thread
-	 * */
+	 /* Delay using Thread
+	 */ 
 	private void Delay(int time) 
 	{
 		try 
@@ -404,58 +757,102 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}			
 	}
+	
+	@Override
+	protected void onStop() 
+	{
+		super.onStop();
+		if (ringtoneMPlayer != null)
+			ringtoneMPlayer.stop();
+	}
+	
 
+
+	/* Object save index & distance from center position of each item */
+	class xLocation 
+	{
+		private int index;
+		private int distanceFromCenter;
+		
+		public xLocation(int index, int distanceFromCenter)
+		{
+			this.index = index;
+			this.distanceFromCenter = distanceFromCenter;
+		}
+		
+		public int getIndex()
+		{
+			return this.index;
+		}
+		
+		public int getdistanceFromCenter()
+		{
+			return this.distanceFromCenter;
+		}
+	}
+		
+	/* Item location */
+	class ItemLocation 
+	{
+		private int index;
+		private int xLeftEdge;
+		private int xRightEdge;
+		
+		public ItemLocation(int index, int xLeftEdge, int xRightEdge)
+		{
+			this.index = index;
+			this.xLeftEdge = xLeftEdge;
+			this.xRightEdge = xRightEdge;
+		}
+		
+		public int getIndex()
+		{
+			return this.index;
+		}
+		
+		public int getXLeftEdge()
+		{
+			return this.xLeftEdge;
+		}
+		
+		public int getXRightEdge()
+		{
+			return this.xRightEdge;
+		}
+	}
+
+	class RingToneData
+	{
+		private int isPlaying = 0;
+		private int index;
+		private int ringtoneId;
+		
+		public RingToneData (int index, int ringtoneId)
+		{
+			this.index = index;
+			this.ringtoneId = ringtoneId;
+		}
+		
+		public int getIndex()
+		{
+			return this.index;
+		}
+		
+		public int getRingtoneId()
+		{
+			return this.ringtoneId;
+		}
+		
+		public void setStatus(int status)
+		{
+			this.isPlaying = status;
+		}
+		
+		public int getStatus()
+		{
+			return this.isPlaying;
+		}
+		
+	}
 }
 
-/* Object save index & distance from center position of each item */
-class xLocation 
-{
-	private int index;
-	private int distanceFromCenter;
-	
-	public xLocation(int index, int distanceFromCenter)
-	{
-		this.index = index;
-		this.distanceFromCenter = distanceFromCenter;
-	}
-	
-	public int getIndex()
-	{
-		return this.index;
-	}
-	
-	public int getdistanceFromCenter()
-	{
-		return this.distanceFromCenter;
-	}
-}
-
-/* Item location */
-class ItemLocation 
-{
-	private int index;
-	private int xLeftEdge;
-	private int xRightEdge;
-	
-	public ItemLocation(int index, int xLeftEdge, int xRightEdge)
-	{
-		this.index = index;
-		this.xLeftEdge = xLeftEdge;
-		this.xRightEdge = xRightEdge;
-	}
-	
-	public int getIndex()
-	{
-		return this.index;
-	}
-	
-	public int getXLeftEdge()
-	{
-		return this.xLeftEdge;
-	}
-	
-	public int getXRightEdge()
-	{
-		return this.xRightEdge;
-	}
-}
